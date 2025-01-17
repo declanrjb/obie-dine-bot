@@ -1,13 +1,14 @@
 import discord
 import os
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
 from discord.ext import commands
 import requests
 import pandas as pd
 import datetime
 import json
+import re
 
-load_dotenv('tokens.env')
+#load_dotenv('tokens.env')
 
 halls = {
     'Stevenson':{
@@ -76,7 +77,7 @@ def scrape_week(date):
         return None
 
 def get_meal_info(meal=None,today=datetime.datetime.today().strftime("%Y-%m-%d")):
-    today = datetime.datetime.today().strftime("%m/%d/%y")
+    #today = datetime.datetime.today().strftime("%m/%d/%y")
     df = scrape_week(today)
     df = df.reset_index(drop = True)
 
@@ -146,32 +147,35 @@ async def on_message(message):
 
     tagged = [tag.id for tag in message.mentions]
     if bot.user.id in tagged or 'direct message' in str(channel).lower():
-        meal_specified = False
+        
+        
         message_content = message.content.lower()
+        if "what's for" in message_content or 'whats for' in message_content or 'what is for' in message_content:
+            meal_specified = False
 
-        if re.search('[0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4}',message_content):
-            target_date = re.search('[0-9]{1,2}/[0-9]{1,2}/[0-9]{4}',message_content).group(0)
-            target_date = datetime.strptime(target_date, "%m/%d/%Y").strftime("%Y-%m-%d")
-        elif 'tomorrow' in message.content.lower():
-            target_date = (datetime.datetime.today() + datetime.timedelta(days=1)).strftime("%Y-%m-%d")
-        else:
-            target_date = datetime.datetime.today().strftime("%Y-%m-%d")
+            if re.search('[0-9]{1,2}/[0-9]{1,2}/[0-9]{2,4}',message_content):
+                target_date = re.search('[0-9]{1,2}/[0-9]{1,2}/[0-9]{4}',message_content).group(0)
+                target_date = datetime.datetime.strptime(target_date, "%m/%d/%Y").strftime("%Y-%m-%d")
+            elif 'tomorrow' in message.content.lower():
+                target_date = (datetime.datetime.today() + datetime.timedelta(days=1)).strftime("%Y-%m-%d")
+            else:
+                target_date = datetime.datetime.today().strftime("%Y-%m-%d")
 
-        for meal in ['breakfast','lunch','dinner']:
-            if meal in message.content.lower():
-                meal_specified = True
+            for meal in ['breakfast','lunch','dinner']:
+                if meal in message.content.lower():
+                    meal_specified = True
 
-                food = get_meal_info(meal,target_date)
+                    food = get_meal_info(meal,target_date)
+                    menu = format_meal(food)
+                    menu = f"*Here's the {meal} menu for {target_date}*:\n" + menu
+
+                    await channel.send(menu)
+
+            if not meal_specified:
+                food = get_meal_info(None,target_date)
                 menu = format_meal(food)
                 menu = f"*Here's the {meal} menu for {target_date}*:\n" + menu
 
                 await channel.send(menu)
 
-        if not meal_specified:
-            food = get_meal_info(None,target_date)
-            menu = format_meal(food)
-            menu = f"*Here's the {meal} menu for {target_date}*:\n" + menu
-
-            await channel.send(menu)
-
-bot.run(os.getenv('BOT_TOKEN'))
+bot.run('MTMyNjcyMDgyNjI1ODc1MTU0OQ.GSfpiL.oSVHuWL97hj8BZrG1qKKBg-E0Bf8FmqXsZ6Mvs')
