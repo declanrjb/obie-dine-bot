@@ -1,2 +1,2 @@
-tokens.env
+*.env
 .DS_Store

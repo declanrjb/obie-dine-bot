@@ -1,6 +1,6 @@
 import discord
 import os
-#from dotenv import load_dotenv
+from dotenv import load_dotenv
 from discord.ext import commands
 import requests
 import pandas as pd
@@ -8,7 +8,7 @@ import datetime
 import json
 import re
 
-#load_dotenv('tokens.env')
+load_dotenv('tokens.env')
 
 halls = {
     'Stevenson':{
@@ -178,4 +178,4 @@ async def on_message(message):
 
                 await channel.send(menu)
 
-bot.run('MTMyNjcyMDgyNjI1ODc1MTU0OQ.GSfpiL.oSVHuWL97hj8BZrG1qKKBg-E0Bf8FmqXsZ6Mvs')
+bot.run(os.getenv('BOT_TOKEN'))
