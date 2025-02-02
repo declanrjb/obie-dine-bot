@@ -1,3 +1,4 @@
 *.env
 .DS_Store
 tokens.env
+discorddev.env

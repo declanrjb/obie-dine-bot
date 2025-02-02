@@ -8,7 +8,7 @@ import datetime
 import json
 import re
 
-load_dotenv('tokens.env')
+load_dotenv('discorddev.env')
 
 halls = {
     'Stevenson':{
