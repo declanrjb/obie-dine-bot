@@ -42,15 +42,19 @@ halls = {
 }
 
 def summarize_item(item):
-    main_cols = [k for k in item.keys() if k not in ['preferences','nutritionals','allergens']]
-    filtered_dict = {k:item[k] for k in main_cols}
-    for k in filtered_dict:
-        if type(filtered_dict[k]) == list:
-            filtered_dict[k] = ', '.join(filtered_dict[k])
+    if type(item) == dict:
+        main_cols = [k for k in item.keys() if k not in ['preferences','nutritionals','allergens']]
+        filtered_dict = {k:item[k] for k in main_cols}
+        for k in filtered_dict:
+            if type(filtered_dict[k]) == list:
+                filtered_dict[k] = ', '.join(filtered_dict[k])
 
-    df = pd.DataFrame(filtered_dict, index=[0])
+        df = pd.DataFrame(filtered_dict, index=[0])
 
-    return df
+        return df
+    else:
+        print(item)
+        return None
 
 def scrape_session(date, hall_num, meal_num):
     response = requests.get(
@@ -58,7 +62,11 @@ def scrape_session(date, hall_num, meal_num):
     )
     data = response.json()
     if len(data) > 0:
-        return pd.concat([summarize_item(item) for item in data])
+        try:
+            result = pd.concat([summarize_item(item) for item in data])
+        except:
+            result = None
+        return result
     else:
         return None
 
