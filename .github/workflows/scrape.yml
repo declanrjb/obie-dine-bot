@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   schedule:
   # every minute
-  - cron: '* * * * *'
+  - cron: '*/5 * * * *'
   # For hourly at 42 minutes past the hour: '42 * * * *'
 
 permissions:
